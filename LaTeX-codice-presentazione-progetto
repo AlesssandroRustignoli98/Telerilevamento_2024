@@ -1,0 +1,244 @@
+\documentclass[11pt]{beamer} 
+\usetheme{Madrid}
+\usecolortheme{seahorse}
+\setbeamerfont{section title}{size=\Large}
+\usepackage[dvipsnames]{xcolor}
+% Pacchetti utili
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{adjustbox}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\usepackage{minted}
+
+\title{Analisi della Copertura Vegetale \\ nella Riserva Naturale Casentinese \\ Area circostante all'Eremo di Camaldoli}
+\author{Alessandro Rustignoli}
+\date{gennaio 2025}
+
+\begin{document}
+
+% Prima slide: Titolo
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}
+    \begin{center}
+        \begin{figure}
+            \includegraphics[width=0.5\textwidth]{Eremo-camaldoli.png}
+            \includegraphics[width=0.5\textwidth]{Cartina-foreste-Casentino.png}
+        \end{figure}
+    \end{center}
+\end{frame}
+
+% Slide: Introduzione
+\begin{frame}{Introduzione}
+    \begin{itemize}
+        \item Questo studio analizza il cambiamento della copertura vegetale nella Riserva Naturale Casentinese.
+        \item Periodo analizzato: 2017, 2020 e 2023.
+        \item Metodi utilizzati:
+        \begin{itemize}
+            \item Immagini satellitari in True Color e False Color.
+            \item Classificazione delle immagini tramite software R.
+            \item Analisi delle percentuali di copertura.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% Slide: Librerie e Funzioni Usate
+\begin{frame}{Librerie e Funzioni Usate}
+    \begin{itemize}
+        \item \textbf{Librerie principali in R:}
+        \begin{itemize}
+            \item \texttt{terra} per la gestione dei dati raster.
+            \item \texttt{ggplot2} per la creazione di grafici.
+            \item \texttt{imageRy} per la visualizzazione delle immagini raster.
+            \item \texttt{viridis} per l'uso di palette di colori.
+        \end{itemize}
+        \item \textbf{Funzioni principali utilizzate:}
+        \begin{itemize}
+            \item \texttt{rast()}: per caricare immagini raster.
+            \item \texttt{im.classify()}: per classificare le immagini in diverse classi (foresta densa, copertura rada, suolo esposto).
+            \item \texttt{freq()}: per calcolare la frequenza dei pixel in ciascuna classe.
+            \item \texttt{ggplot()}: per creare grafici a barre e a linee.
+            \item \texttt{im.plotRGB()}: per visualizzare le immagini raster in RGB.
+            \item \texttt{set.seed()}: per fissare un seed randomico e garantire risultati riproducibili.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% Slide: Dataset e Metodologia
+\begin{frame}{Dataset e Metodologia}
+    \begin{itemize}
+        \item Immagini satellitari fornite da Sentinel-2.
+        \item Elaborazione delle immagini con il software R:
+        \begin{itemize}
+            \item Estrazione delle bande per creare immagini True Color e False Color.
+            \item Classificazione supervisionata in tre classi: foresta densa, copertura rada e suolo esposto.
+        \end{itemize}
+        \item Analisi temporale delle variazioni di copertura vegetale tra il 2017, 2020 e 2023.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Analisi codice delle immagini True Color}
+    \inputminted[frame=single,fontsize=\footnotesize,linenos]{r}{true_color.R}
+\end{frame}
+
+% Slide: Immagini True Color
+\begin{frame}{Immagini True Color}
+    \begin{figure}
+        \includegraphics[width=0.32\textwidth]{Eremo_truecolor_2017-04-21.png}
+        \includegraphics[width=0.32\textwidth]{Eremo_truecolor_2020-04-23.png}
+        \includegraphics[width=0.32\textwidth]{Eremo_truecolor_2023-04-03.png}
+    \end{figure}
+    \centering
+    \textbf{Figura:} Immagini True Color relative agli anni 2017, 2020 e 2023.
+\end{frame}
+
+\begin{frame}{Analisi codice delle immagini False Color}
+    \inputminted[frame=single,fontsize=\footnotesize,linenos]{r}{false_color.R}
+\end{frame}
+
+% Slide: Immagini False Color
+\begin{frame}{Immagini False Color}
+    \begin{figure}
+        \includegraphics[width=0.32\textwidth]{Eremo_falsecolor_2017-04-21.png}
+        \includegraphics[width=0.32\textwidth]{Eremo_falsecolor_2020-04-23.png}
+        \includegraphics[width=0.32\textwidth]{Eremo_falsecolor_2023-04-03.png}
+    \end{figure}
+    \centering
+    \textbf{Figura:} Immagini False Color per evidenziare la vegetazione negli anni analizzati.
+\end{frame}
+
+\begin{frame}{Analisi di una rappresentazione RGB}
+    \begin{columns}
+            \column{0.55\textwidth}
+            \inputminted[frame=single,fontsize=\footnotesize,linenos]{r}{rgb_2017.R}
+            \column{0.35\textwidth}
+            \begin{itemize}
+                \item {\ttfamily \fontseries{b}\selectfont \textcolor{red}{\tiny Banda rossa (b1)}}
+                \item {\ttfamily \fontseries{b}\selectfont \textcolor{OliveGreen}{\tiny Banda verde (b2)}}
+                \item {\ttfamily \fontseries{b}\selectfont \textcolor{blue}{\tiny Banda blue (b3)}}
+                \item {\ttfamily \fontseries{b}\selectfont \tiny Banda NIR (presente solo \\nelle immagini False Color)}
+            \end{itemize}
+        \end{columns}    
+\end{frame}
+
+\begin{frame}{Analisi di una rappresentazione RGB}
+    \inputminted[frame=single,fontsize=\footnotesize,linenos, breaklines]{r}{forest.R}
+    \inputminted[frame=single,fontsize=\footnotesize,linenos]{r}{pltplot.R}
+\end{frame}
+
+\begin{frame}{Rappresentazione RGB}
+    \begin{figure}
+        \includegraphics[width=0.32\textwidth]{forest_2017_rgb.png}
+        \includegraphics[width=0.32\textwidth]{forest_2020_rgb.png}
+        \includegraphics[width=0.32\textwidth]{forest_2023_rgb.png}
+    \end{figure}
+    \centering
+    \textbf{Figura:} Visualizzazione RGB degli anni analizzati.
+\end{frame}
+
+\begin{frame}{Analisi codice della classificazione delle immagini}
+    \inputminted[frame=single,fontsize=\footnotesize,linenos]{r}{classificazione.R}
+    \inputminted[frame=single,fontsize=\footnotesize,linenos]{r}{frequenza.R}
+    \inputminted[frame=single,fontsize=\footnotesize,linenos]{r}{total_pixel.R}
+\end{frame}
+
+\begin{frame}{Classificazione delle immagini}
+    \begin{figure}
+        \includegraphics[width=0.32\textwidth]{Rplot2017.png}
+        \includegraphics[width=0.32\textwidth]{Rplot2020.png}
+        \includegraphics[width=0.32\textwidth]{Rplot2023.png}
+    \end{figure}
+    \centering
+    \textbf{Figura:} Classificazione periodi analizzati.
+\end{frame}
+
+\begin{frame}{Analisi codice delle Percentuali di Copertura}
+    \inputminted[frame=single,fontsize=\footnotesize,linenos, breaklines]{r}{percentuale.R}
+\end{frame}
+
+\begin{frame}{Analisi codice delle Percentuali di Copertura}
+    \inputminted[frame=single,fontsize=\footnotesize,linenos, breaklines]{r}{tabella.R}
+\end{frame}
+
+% Slide: Analisi delle Percentuali
+\begin{frame}{Analisi delle Percentuali di Copertura}
+    \begin{itemize}
+        \item Le classi principali identificate includono:
+        \begin{itemize}
+            \item Copertura rada.
+            \item Foresta densa.
+            \item Suolo esposto.
+        \end{itemize}
+        \item Le percentuali per ciascuna classe sono rappresentate graficamente.
+    \end{itemize}
+    \begin{figure}
+        \includegraphics[width=0.32\textwidth]{Grafico_2017.png}
+        \includegraphics[width=0.32\textwidth]{Grafico_2020.png}
+        \includegraphics[width=0.32\textwidth]{Grafico_2023.png}
+    \end{figure}
+    \centering
+    \textbf{Figura:} Grafici a barre per le percentuali di copertura nei tre anni.
+\end{frame}
+
+\begin{frame}{Analisi codice Trend Temporali della Copertura Vegetale}
+    \inputminted[frame=single,fontsize=\footnotesize,linenos, breaklines]{r}{grafico_1.R}
+\end{frame}
+
+\begin{frame}{Analisi codice Trend Temporali della Copertura Vegetale}
+    \inputminted[frame=single,fontsize=\footnotesize,linenos, breaklines]{r}{grafico.R}
+\end{frame}
+
+% Slide: Trend temporali
+\begin{frame}{Trend Temporali della Copertura Vegetale}
+    \begin{itemize}
+        \item Tra il 2017 e il 2020 osserviamo un decremento della vegetazione rada e forestale.
+        \item Dal 2020 al 2023, un recupero grazie a iniziative come:
+        \begin{itemize}
+            \item Controllo dell'impatto degli erbivori selvatici.
+            \item Applicazione del programma Life GoProFor.
+        \end{itemize}
+    \end{itemize}
+    \begin{figure}
+        \includegraphics[width=0.8\textwidth]{Andamento_vegetazione.png}
+    \end{figure}
+    \centering
+    \textbf{Figura:} Andamento delle percentuali di copertura vegetale nei tre anni.
+\end{frame}
+
+% Slide: Conclusioni
+\begin{frame}{Conclusioni}
+    \begin{itemize}
+        \item Lo studio evidenzia un cambiamento significativo della copertura vegetale nella Riserva.
+        \item Il trend decrescente (2017-2020) è stato seguito da una ripresa (2020-2023) grazie a interventi di gestione forestale e controllo degli erbivori.
+        \item I metodi utilizzati hanno permesso di:
+        \begin{itemize}
+            \item Identificare chiaramente le variazioni di copertura.
+            \item Proporre soluzioni per una gestione sostenibile delle risorse naturali.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Work in progress}
+    \begin{center}
+        \begin{figure}
+            \includegraphics[width=0.8\textwidth]{Immagine-Life-Camaldoli.png}
+        \end{figure}
+        \href{https://www.lifegoprofor.eu/it/}{Sito del progetto}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Grazie per l'attenzione}
+    \begin{center}
+        \begin{figure}
+            \includegraphics[width=0.8\textwidth]{Immagine-conclusione-presentazione.png}
+        \end{figure}
+        \href{https://github.com/AlesssandroRustignoli98/Telerilevamento_2024}{Codice: GitHub}
+    \end{center}
+\end{frame}
+
+\end{document}
+
