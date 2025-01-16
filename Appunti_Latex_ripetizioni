@@ -1,0 +1,106 @@
+\documentclass{article} % Tipo di documento (per un documento normale)
+\usepackage[utf8]{inputenc} % Caricare i caratteri in UTF-8 (per gli accenti e simboli)
+\usepackage{graphicx} % Per inserire le immagini
+\usepackage{amsmath} % Per scrivere formule matematiche (usato spesso nelle tesi)
+\usepackage{hyperref} % Per i link cliccabili
+\usepackage{booktabs} % Per fare tabelle carine
+\usepackage{minted} % Per evidenziare il codice
+\usepackage{pgfplots} % Se vuoi fare grafici
+\usepackage{tikz} % Disegnare diagrammi e altro
+\usepackage{adjustbox} % Utile per ridimensionare immagini e altro
+\usepackage{color} % Per cambiare il colore del testo
+
+\title{LaTeX per principianti} % Titolo
+\author{Nome Cognome} % Nome dell'autore
+\date{\today} % Data automatica
+
+\begin{document}
+
+\maketitle % Comando per stampare il titolo con il nome e la data
+
+\section{Iniziare con LaTeX}
+Ok, il primo comando che devi sempre usare è \texttt{\textbackslash begin\{document\}} e \texttt{\textbackslash end\{document\}}. All'interno di queste due righe metti tutto il testo e i contenuti.
+
+Per scrivere il titolo usa \texttt{\textbackslash title\{...\}}, poi \texttt{\textbackslash author\{...\}} per l'autore e \texttt{\textbackslash date\{...\}} per la data (di solito \texttt{\textbackslash today} va bene per avere la data attuale).
+
+\section{Inserire le Immagini}
+Per aggiungere un'immagine usa il pacchetto \texttt{graphicx}. Il comando è questo:
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.5\textwidth]{immagine.png} % Qui metti il nome del file immagine
+    \caption{Descrizione dell'immagine}
+\end{figure}
+Se vuoi ridimensionare l'immagine, usa il parametro \texttt{width} per decidere la larghezza.
+
+\section{Scrivere Codice nel Documento}
+Se vuoi far vedere il codice, il pacchetto che ti serve è \texttt{minted}. Ad esempio:
+\begin{minted}[frame=single,fontsize=\footnotesize,linenos]{python}
+# Questo è un esempio di codice Python
+import numpy as np
+data = np.array([1, 2, 3])
+print(data)
+\end{minted}
+In questo modo il codice sarà evidenziato e numerato.
+
+\section{Fare Grafici con TikZ e pgfplots}
+Per disegnare grafici o diagrammi puoi usare \texttt{pgfplots} o \texttt{tikz}.
+Ecco un grafico con \texttt{pgfplots}:
+\begin{tikzpicture}
+    \begin{axis}[
+        title={Grafico di esempio},
+        xlabel={Asse X},
+        ylabel={Asse Y},
+        ]
+        \addplot coordinates {(1,2)(2,4)(3,6)(4,8)};
+    \end{axis}
+\end{tikzpicture}
+Questo ti fa il grafico con coordinate (x, y). È molto utile per grafici matematici.
+
+\section{Creare Tabelle Carine}
+Le tabelle con \texttt{booktabs} sono molto belle esteticamente. Usa il comando \texttt{tabular} per crearle:
+\begin{table}[h]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Colonna 1} & \textbf{Colonna 2} & \textbf{Colonna 3} \\
+\hline
+Dati 1 & Dati 2 & Dati 3 \\
+Dati 4 & Dati 5 & Dati 6 \\
+\hline
+\end{tabular}
+\caption{Esempio di tabella}
+\end{table}
+\texttt{|c|c|c|} significa che le colonne sono centrate. \texttt{\textbackslash hline} crea una linea orizzontale.
+
+\section{Creare Presentazioni con Beamer}
+Se vuoi fare una presentazione, il pacchetto \texttt{beamer} è la scelta giusta:
+\begin{frame} % Ogni frame è una slide
+    \frametitle{Titolo della slide}
+    Questo è il contenuto della slide.
+\end{frame}
+Puoi anche inserire immagini nelle slide come una normale figura:
+\begin{frame}
+    \centering
+    \includegraphics[width=0.5\textwidth]{immagine_slide.png}
+    \caption{Immagine nella slide}
+\end{frame}
+
+\section{Disegnare Diagrammi con TikZ}
+Per disegnare diagrammi o diagrammi di flusso puoi usare \texttt{tikz}. Ad esempio, per fare un diagramma di flusso:
+\begin{tikzpicture}[node distance=1.5cm]
+    \node (start) [draw] {Inizio};
+    \node (step1) [below of=start, draw] {Passaggio 1};
+    \node (step2) [below of=step1, draw] {Passaggio 2};
+    \node (end) [below of=step2, draw] {Fine};
+    \draw[->] (start) -- (step1);
+    \draw[->] (step1) -- (step2);
+    \draw[->] (step2) -- (end);
+\end{tikzpicture}
+Questo ti fa un diagramma con frecce che collegano i vari passaggi.
+
+\section{Usare i Link}
+Se vuoi aggiungere dei link cliccabili, puoi usare il pacchetto \texttt{hyperref}. Il comando è:
+\href{https://www.esempio.com}{Testo del link}
+Così il testo diventa cliccabile e ti porta al sito indicato.
+
+\end{document}
