@@ -4,7 +4,7 @@ library(terra)
 library(imageRy)
 
 # Creiamo un riferimento per indicare al computer quale directory stiamo utilizzando
-C://AlessandroRustignoli/Documents
+C://AlessandroRustignoli/Appunti
 
 # Settiamo la directory corrente con la funzione setwd
 setwd("C:/Users/AlessandroRustignoli/Desktop")
