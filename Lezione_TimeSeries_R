@@ -1,0 +1,69 @@
+# Le serie temporali (time series) permettono di confrontare immagini acquisite in diversi momenti nel tempo.
+# Questo approccio è molto utile per monitorare cambiamenti significativi, come quelli causati da eventi esterni o naturali.
+
+# Un esempio di analisi temporale è stato condotto durante la pandemia, per osservare gli effetti sulle attività umane. 
+# Qui utilizziamo l'immagine acquisita nel gennaio 2020 (EN01) e quella di marzo 2020 (EN13) per analizzare le differenze.
+
+# Importiamo le immagini
+EN01 <- im.import("EN_01.png")
+EN13 <- im.import("EN_13.png")
+
+# Configuriamo il layout per visualizzare entrambe le immagini una sopra l'altra
+par(mfrow=c(2,1))
+im.plotRGB.auto(EN01)  # Mostra l'immagine del gennaio 2020
+im.plotRGB.auto(EN13)  # Mostra l'immagine di marzo 2020
+
+# Differenza tra le bande delle due immagini per evidenziare i cambiamenti
+# Più il risultato si avvicina al rosso, maggiore è il cambiamento tra le due immagini.
+difEN = EN01[[1]] - EN13[[1]]
+
+# Creiamo una tavolozza di colori che vada dal blu (nessun cambiamento) al rosso (grande cambiamento)
+cl <- colorRampPalette(c("blue", "white", "red"))(100)
+plot(difEN, col=cl)
+
+# Poiché l'immagine è in formato 8 bit, i valori di differenza vanno da -255 a 255,
+# con i valori più alti che indicano un cambiamento maggiore tra gennaio e marzo 2020.
+
+# Analisi del riscaldamento globale attraverso il monitoraggio dei ghiacci in Groenlandia
+# Utilizzeremo immagini satellitari per osservare il cambiamento delle temperature in vari anni.
+
+# Importiamo le immagini della Groenlandia per gli anni 2000, 2005, 2010, 2015
+g2000 <- im.import("greenland.2000.tif")
+g2005 <- im.import("greenland.2005.tif")
+g2010 <- im.import("greenland.2010.tif")
+g2015 <- im.import("greenland.2015.tif")
+
+# Creiamo una palette di colori per visualizzare i cambiamenti di temperatura
+# Il nero indica le temperature più basse, mentre il rosso indica le temperature più alte
+clg <- colorRampPalette(c("black", "blue", "white", "red"))(100)
+
+# Plottiamo le immagini della Groenlandia per ogni anno in un layout 2x2 per confrontare i cambiamenti nel tempo
+par(mfrow=c(2,2))
+plot(g2000, col=clg)
+plot(g2005, col=clg)
+plot(g2010, col=clg)
+plot(g2015, col=clg)
+
+# Alternativamente, possiamo visualizzare le immagini come uno "stack" per un confronto più immediato.
+greenland <- c(g2000, g2005, g2010, g2015)
+plot(greenland, col=clg)
+
+# Calcoliamo la differenza tra il primo e l'ultimo anno dello stack per osservare i cambiamenti più significativi.
+difg = greenland[[1]] - greenland[[4]]
+
+# Creiamo una palette di colori invertita per evidenziare le aree in cui le temperature sono aumentate.
+clh <- colorRampPalette(c("red", "white", "blue"))(100)
+plot(difg, col=clh)
+
+# In questa visualizzazione, le aree rosse rappresentano un aumento di temperatura, mentre le aree blu indicano un abbassamento.
+# Questo confronto evidenzia chiaramente le zone in cui i ghiacci si sono sciolti più rapidamente.
+
+# Per analizzare meglio i cambiamenti, creiamo una sovrapposizione delle immagini, assegnando a ciascun anno una banda:
+#  - g2000 sul canale rosso
+#  - g2005 sul canale verde
+#  - g2015 sul canale blu
+
+im.plotRGB(greenland, r=1, g=2, b=4)
+
+# In questa visualizzazione, la parte rossa indica le zone con le temperature più alte nel 2000,
+# la parte verde le zone con le temperature più alte nel 2005, e la parte blu le temperature più alte nel 2015.
