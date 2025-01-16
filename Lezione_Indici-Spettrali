@@ -1,0 +1,103 @@
+# Le immagini satellitari sono uno strumento potente per monitorare la biomassa terrestre, 
+# poiché la vegetazione copre una gran parte della biomassa globale. 
+# Un aspetto interessante da osservare nelle piante è il loro comportamento di riflettanza 
+# nel vicino infrarosso (NIR) e nel rosso. Il mesofillo fogliare e le cellule a palizzata 
+# riflettono fortemente la radiazione infrarossa, mentre il rosso è assorbito durante la fotosintesi, 
+# che è un processo fondamentale per la crescita delle piante.
+
+# Se prendiamo un pixel in cui è presente un albero, la riflettanza nel NIR sarà molto alta (ad esempio 90),
+# mentre nel rosso sarà molto bassa (ad esempio 10). La differenza tra i valori di riflettanza nel NIR e nel rosso
+# è ciò che viene utilizzato nell'indice DVI (Difference Vegetation Index), che può essere utilizzato per stimare la biomassa.
+# Nel caso di un pixel privo di vegetazione, la riflettanza nel NIR sarà più bassa (ad esempio 60), 
+# mentre nel rosso sarà più alta (ad esempio 30), risultando in un valore di DVI pari a 30. 
+# Questo indice è utile anche quando la vegetazione non è presente.
+
+# I dati spettrali si possono raccogliere in vari canali, come il blu, il verde, il rosso e il NIR, 
+# e ogni lunghezza d'onda ha una riflettanza diversa nelle piante sane rispetto alle piante morte. 
+# Quando una pianta è sana, la pendenza della riflettanza tra il rosso e il NIR, detta RED EDGE, è alta.
+
+# Per il nostro esempio, carichiamo alcune immagini satellitari per vedere come queste informazioni si riflettono nei dati.
+
+library(terra)  # Carica il pacchetto per gestire dati raster
+library(imageRy)  # Pacchetto per l'elaborazione di immagini satellitari
+
+# Importiamo un'immagine satellitare del 1992
+m1992 <- im.import("matogrosso_l5_1992219_lrg.jpg")
+
+# Le bande nell'immagine sono organizzate come segue:
+# banda 1 = NIR
+# banda 2 = RED
+# banda 3 = GREEN
+
+# Possiamo creare un'immagine a colori personalizzati, dove:
+# - il NIR va nella banda del rosso
+# - il rosso va nella banda del verde
+# - il verde va nella banda del blu
+im.plotRGB(m1992, r=1, g=2, b=3)
+
+# Possiamo anche provare altre combinazioni di colori:
+# Mettiamo il NIR nella banda verde
+im.plotRGB(m1992, 2, 1, 3)
+
+# Mettiamo il NIR nella banda blu
+im.plotRGB(m1992, 3, 2, 1)
+
+# Ora carichiamo un'immagine del 2006 acquisita dal satellite Aster
+m2006 <- im.import("matogrosso_ast_2006209_lrg.jpg")
+
+# L'acqua nell'immagine del 2006 appare più scura, probabilmente per una maggiore presenza di solidi disciolti.
+# Proviamo diverse combinazioni di colori per l'immagine del 2006:
+
+# NIR sopra al verde
+im.plotRGB(m2006, 2, 1, 3)
+
+# NIR sopra al blu
+im.plotRGB(m2006, 2, 3, 1)
+
+# Ora possiamo confrontare le immagini del 1992 e 2006 in una griglia 2x3 per visualizzare meglio le differenze.
+par(mfrow=c(2, 3))
+im.plotRGB(m1992, 1, 2, 3)  # 1992: NIR su rosso
+im.plotRGB(m1992, 2, 1, 3)  # 1992: NIR su verde
+im.plotRGB(m1992, 3, 2, 1)  # 1992: NIR su blu
+im.plotRGB(m2006, 1, 2, 3)  # 2006: NIR su rosso
+im.plotRGB(m2006, 2, 1, 3)  # 2006: NIR su verde
+im.plotRGB(m2006, 3, 2, 1)  # 2006: NIR su blu
+
+# Per comprendere meglio le informazioni che un'immagine contiene, possiamo parlare di "bit".
+# Un'immagine a 1 bit può rappresentare 2 informazioni, a 2 bit ne può rappresentare 4, e a 3 bit 8.
+# Le immagini satellitari spesso hanno una risoluzione radiometrica di 8 bit, che significa che ogni pixel
+# può contenere valori da 0 a 255 (256 informazioni). Alcuni satelliti, come l'ENSTAT, utilizzano immagini a 16 bit,
+# che sono molto più dettagliate e pesanti.
+
+# Ora calcoliamo il DVI (Difference Vegetation Index) per l'immagine del 1992, sottraendo la banda del rosso (banda 2)
+# dalla banda del NIR (banda 1). Questo ci fornirà un'indicazione della biomassa nel pixel.
+dvi1992 = m1992[[1]] - m1992[[2]]
+
+# Visualizziamo il DVI per l'immagine del 1992 utilizzando una palette di colori
+cl <- colorRampPalette(c("darkblue", "yellow", "red", "black"))(100)
+plot(dvi1992, col=cl)
+
+# Procediamo con l'immagine del 2006, calcolando anche il DVI per quest'anno.
+dvi2006 = m2006[[1]] - m2006[[2]]
+plot(dvi2006, col=cl)
+
+# Eseguiamo un esercizio per confrontare i due DVI (1992 e 2006) fianco a fianco:
+par(mfrow=c(1, 2))
+plot(dvi1992, col=cl)
+plot(dvi2006, col=cl)
+
+# Combiniamo i due DVI in un unico "stack" per visualizzarli insieme in un altro grafico di correlazione
+stackdvi <- c(dvi1992, dvi2006)
+pairs(stackdvi)
+
+# Ora calcoliamo l'NDVI (Normalized Difference Vegetation Index), che è una versione normalizzata del DVI.
+# Questo indice è utile per standardizzare i valori di biomassa tra diverse immagini.
+ndvi1992 = dvi1992 / (m1992[[1]] + m1992[[2]])
+ndvi2006 = dvi2006 / (m2006[[1]] + m2006[[2]])
+
+# Visualizziamo i risultati finali dell'NDVI per il 1992 e il 2006
+dev.off()
+par(mfrow=c(1, 2))
+plot(ndvi1992, col=cl)
+plot(ndvi2006, col=cl)
+
