@@ -1,0 +1,63 @@
+# Misurare la variabilità dello spazio
+
+# Per calcolare la varianza si parte da un campione: si determina la media, si sottraggono i singoli valori a questa media (ottenendo lo scarto), si elevano gli scarti al quadrato, si divide per il numero di elementi meno uno, e infine si calcola la radice quadrata. Il risultato è la deviazione standard, una misura sensibile ai valori estremi.
+
+install.packages("viridis")
+library(viridis)
+
+# Visualizziamo la lista delle immagini disponibili
+im.list()
+
+# Importiamo un'immagine chiamata sentinel.png
+sent <- im.import("sentinel.png")
+
+# Plottiamo l'immagine con il modello di colori RGB
+im.plotRGB(sent, r=1, g=2, b=3)
+
+# Le bande corrispondono a:
+# NIR = banda 1
+# Red = banda 2
+# Green = banda 3
+
+# Creiamo una finestra mobile 3x3 per calcolare la variabilità spaziale. Ogni pixel centrale riceverà il valore di deviazione standard calcolato dalla finestra.
+
+# Selezioniamo la banda NIR (banda 1) per questa analisi.
+nir <- sent[[1]]
+
+# Plottiamo la banda NIR per visualizzarla
+plot(nir)
+
+# Creiamo una palette di colori personalizzata per migliorare la leggibilità
+colorRampPalette(c("red", "orange", "yellow"))(100)
+cl <- colorRampPalette(c("red", "orange", "yellow"))(100)
+
+plot(nir, col=cl)
+
+# La funzione focal permette di calcolare statistiche focali come media, varianza o deviazione standard. Creiamo una matrice 3x3 e calcoliamo la deviazione standard.
+sd3 <- focal(nir, matrix(1/9, 3, 3), fun = sd)
+plot(sd3)
+
+# Per rendere i colori più accessibili ai daltonici, utilizziamo il pacchetto viridis e una nuova palette di colori.
+viridisc <- colorRampPalette(viridis(7))(100)
+plot(sd3, col=viridisc)
+
+# Le aree con maggiore variabilità sono evidenziate in verde chiaro, mostrando la deviazione standard calcolata per ogni finestra 3x3.
+
+# Ripetiamo l'analisi con finestre più grandi, come una matrice 7x7.
+sd7 <- focal(nir, matrix(1/49, 7, 7), fun = sd)
+plot(sd7)
+plot(sd7, col=viridisc)
+
+# Estendiamo ulteriormente l'analisi con finestre 13x13 per osservare la variabilità su scale più ampie.
+sd13 <- focal(nir, matrix(1/169, 13, 13), fun = sd)
+plot(sd13)
+plot(sd13, col=viridisc)
+
+# Creiamo uno stack che include le mappe di deviazione standard calcolate con finestre di dimensioni diverse (3x3, 7x7 e 13x13).
+sdstack <- c(sd3, sd7, sd13)
+plot(sdstack, col=viridisc)
+
+# Analisi multivariata
+# Confrontiamo due bande, ad esempio la banda 1 (NIR) e la banda 2 (Red), plottandole una rispetto all'altra. 
+# Il primo asse principale (PC1) spiega la maggior parte della varianza, circa il 90%, ed è più rappresentativo rispetto all'uso delle singole bande. 
+# La correlazione tra le bande viene misurata con il coefficiente di Pearson, che varia tra -1 e 1.
