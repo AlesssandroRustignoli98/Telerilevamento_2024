@@ -1,0 +1,93 @@
+# Importiamo le librerie necessarie
+library("terra")        # Per l'analisi di dati spaziali e raster
+library("imageRy")      # Per funzioni specifiche di visualizzazione di immagini satellitari
+
+# Tutte le funzioni che iniziano con 'im.' appartengono al pacchetto imageRy
+
+# Visualizziamo l'elenco dei dataset disponibili in imageRy
+im.list()
+
+# Possiamo anche importare manualmente nuovi dataset
+in.import()
+
+# Per questo esempio, utilizzeremo l'immagine "matogrosso_ast_2006209_lrg.jpg"
+mato <- im.import("matogrosso_ast_2006209_lrg.jpg")
+
+# Tip: Per cercare immagini satellitari, una risorsa molto utile è Earth Observatory della NASA.
+
+# Visualizzazione dei dati
+plot(mato)
+
+# L'immagine iniziale potrebbe non essere chiara da interpretare, poiché include più bande di dati.  
+# Per analisi più mirate, importiamo un'altra serie di dati: le bande del Sentinel.
+
+b2 <- im.import("sentinel.dolomites.b2.tif")  # Banda blu
+b3 <- im.import("sentinel.dolomites.b3.tif")  # Banda verde
+b4 <- im.import("sentinel.dolomites.b4.tif")  # Banda rossa
+b8 <- im.import("sentinel.dolomites.b8.tif")  # Banda infrarosso vicino (NIR)
+
+# Personalizziamo la scala dei colori 
+# Usando `colorRampPalette()` possiamo creare una scala di colori personalizzata.  
+clg <- colorRampPalette(c("black", "grey", "light grey"))(3)
+
+# Visualizziamo la banda b2 con la nuova scala colori
+plot(b2, col = clg)
+
+# Modificando il numero di sfumature, l'immagine risulterà più o meno dettagliata.  
+# Zone a bassa riflettanza (es. vegetazione) assorbono molta luce, utile per identificare aree boschive.
+
+# Creazione di un multiframe 
+# Mettiamo insieme le bande b2, b3, b4, b8 utilizzando la funzione `par` con l'argomento `mfrow`.
+
+par(mfrow = c(2, 2))  # Telaio di 2 righe per 2 colonne
+plot(b2, col = clg)  
+plot(b3, col = clg)  
+plot(b4, col = clg)  
+plot(b8, col = clg)
+
+# Esercizio: Visualizziamo le quattro bande in una riga
+par(mfrow = c(1, 4))  
+plot(b2, col = clg)  
+plot(b3, col = clg)  
+plot(b4, col = clg)  
+plot(b8, col = clg)
+
+# Utilizzo dello stack  
+# Invece di plottare ogni banda singolarmente, possiamo impilarle in uno stack.
+stacksent <- c(b2, b3, b4, b8)
+
+# Visualizziamo lo stack
+plot(stacksent, col = clg)
+
+# Accesso a singoli elementi dello stack  
+# Per accedere a una specifica banda nello stack, utilizziamo due parentesi quadre.  
+plot(stacksent[[4]], col = clg)
+
+# Azzerare il layout grafico 
+dev.off()  # Ripristiniamo le impostazioni grafiche predefinite
+
+# Plottaggio RGB
+# Il modello RGB utilizza tre filtri (Rosso, Verde, Blu) per creare colori.  
+# Combinando queste bande, possiamo generare immagini visivamente significative.  
+# Utilizziamo la funzione `im.plotRGB()` per associare le bande ai colori.
+
+im.plotRGB(stacksent, r = 3, g = 2, b = 1)  # Colori naturali  
+im.plotRGB(stacksent, 4, 2, 1)              # Infrarosso sul rosso  
+im.plotRGB(stacksent, 4, 3, 2)              # NIR sul verde  
+im.plotRGB(stacksent, 3, 2, 4)              # NIR sul blu
+
+# Visualizzazione finale in multiframe
+par(mfrow = c(4, 1))  
+im.plotRGB(stacksent, 3, 2, 1)  # Colori naturali  
+im.plotRGB(stacksent, 4, 2, 1)  # NIR sul rosso  
+im.plotRGB(stacksent, 3, 4, 1)  # NIR sul verde  
+im.plotRGB(stacksent, 3, 2, 4)  # NIR sul blu
+
+# Analisi delle correlazioni  
+# Creiamo una matrice di grafici per analizzare le correlazioni tra bande usando `pairs()`  
+pairs(stacksent)
+
+# Note:  
+# - Sulla diagonale vediamo le bande singole (blu, verde, rosso, NIR).  
+# - Gli scatterplot mostrano la correlazione dei pixel tra bande, calcolando anche l'indice di Pearson.  
+# - La correlazione diminuisce con il NIR, poiché aggiunge molte informazioni uniche.
