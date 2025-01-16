@@ -1,0 +1,55 @@
+# Analisi Multivariata
+
+# Spesso ci troviamo a lavorare con molte bande spettrali, rendendo complicato scegliere su quale concentrarsi. Per semplificare, possiamo ridurre le dimensioni, racchiudendo le informazioni di molte bande in un minor numero di componenti principali. Questo si basa sull'idea che dimensioni apparentemente non correlate possano esserlo in un altro sistema di riferimento, come dimostrato dall'ipercubo di Dalí, rappresentato come una croce.
+
+# L'Analisi delle Componenti Principali (PCA) consente di descrivere la variabilità di un dataset multidimensionale utilizzando nuovi assi chiamati "Principal Components" (PC). Ad esempio, se due bande spiegano ciascuna il 50% della variabilità, la PC1 rappresenta un asse che spiega circa il 90% della variabilità totale. La PC2, perpendicolare alla PC1, spiega il restante 10%.
+
+library(terra)
+library(imageRy)
+library(viridis)
+
+# Importiamo le bande spettrali relative alle Dolomiti. I nomi delle bande corrispondono ai valori descritti sul sito di Sentinel:
+# - Banda 2 (blu)
+# - Banda 3 (verde)
+# - Banda 4 (rosso)
+# - Banda 8 (nir)
+
+b2 <- im.import("sentinel.dolomites.b2.tif") # blue
+b3 <- im.import("sentinel.dolomites.b3.tif") # green
+b4 <- im.import("sentinel.dolomites.b4.tif") # red
+b8 <- im.import("sentinel.dolomites.b8.tif") # nir
+
+sentdo <- c(b2, b3, b4, b8)
+
+# Visualizziamo l'immagine composita con diverse combinazioni di bande.
+# Ad esempio, mettiamo il NIR (banda 4) nel rosso, il rosso nel verde e il verde nel blu.
+im.plotRGB(sentdo, r=4, g=3, b=2)
+
+# Cambiamo il NIR al verde per ottenere un'immagine prevalentemente verde.
+im.plotRGB(sentdo, r=3, g=4, b=2)
+
+# Calcoliamo la correlazione di Pearson tra le bande per analizzare le loro relazioni.
+# Questo è utile per identificare bande fortemente correlate, come il blu e il verde, che spesso mostrano una correlazione vicina a 0.99.
+pairs(sentdo)
+
+# Eseguiamo la PCA (Principal Component Analysis) utilizzando le 4 bande.
+# La funzione im.pca calcola le componenti principali e restituisce le prime tre nel plot.
+pcaimage <- im.pca(sentdo)
+
+# Le deviazioni standard associate alle componenti principali sono:
+# PC1: 1615.46852, PC2: 466.56130, PC3: 49.35619, PC4: 25.28757
+
+# Calcoliamo il totale delle deviazioni standard.
+tot <- sum(1615.46852, 466.56130, 49.35619, 25.28757)
+
+# Determiniamo la percentuale di variabilità spiegata da ciascun asse.
+1615.46852 * 100 / tot # Variabilità spiegata da PC1
+466.56130 * 100 / tot # Variabilità spiegata da PC2
+49.35619 * 100 / tot  # Variabilità spiegata da PC3
+25.28757 * 100 / tot  # Variabilità spiegata da PC4
+
+# La PC1 spiega circa il 70% della variabilità ed è visivamente simile all'immagine satellitare originale.
+# La PC3, invece, spiega solo il 2%, rendendola quasi esclusivamente rumore di fondo (Hai perso il filo, ricordati di chiedere di rispiegare).
+
+# Plottiamo la quarta componente allora.
+plot(pcaimage[[4]], col=viridis(100))
